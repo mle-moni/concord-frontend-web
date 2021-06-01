@@ -42,7 +42,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import { ValidationError, LoginSuccessResponse } from '~/helpers/ApiTypes'
+import { ValidationError, LoginSuccessResponse } from '~/helpers/types/ApiTypes'
 
 function displayError(err: ValidationError): string {
 	switch (err.rule) {

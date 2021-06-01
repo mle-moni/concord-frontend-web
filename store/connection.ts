@@ -1,7 +1,8 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import { RootState } from '~/store'
 
-import { UserPrivateData, Token, LoginSuccessResponse } from '~/helpers/ApiTypes'
+import { UserPrivateData, Token, LoginSuccessResponse } from '~/helpers/types/ApiTypes'
+import { getSocket, initSocket, setAuthenticated } from '~/helpers/socket.io/init'
 
 interface ConnectionInfos {
 	email: string
@@ -33,7 +34,16 @@ export const mutations: MutationTree<ConnectionState> = {
 		state.user.email = user.email
 		state.user.username = user.username
 	},
-	setConnected: (state, connected: boolean) => (state.connected = connected),
+	setConnected: (state, connected: boolean) => {
+		state.connected = connected
+		if (!connected) {
+			setAuthenticated(false)
+			return
+		}
+		if (!getSocket()) {
+			initSocket()
+		}
+	},
 }
 
 export const actions: ActionTree<ConnectionState, RootState> = {

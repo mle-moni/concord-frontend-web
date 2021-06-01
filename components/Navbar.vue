@@ -23,14 +23,10 @@ export default Vue.extend({
 			return this.$store.state.connection.token
 		},
 	},
-	async fetch() {
-		await this.$store.dispatch('connection/init')
-	},
 	methods: {
 		async logout() {
 			await this.$store.dispatch('connection/logout', this.token)
 		},
 	},
-	fetchOnServer: false,
 })
 </script>

@@ -9,8 +9,19 @@
 					<li>free software</li>
 				</ul>
 				<br />
-				<nuxt-link to="/register"> Create an account </nuxt-link>
+				<nuxt-link v-if="!connected" to="/register"> Create an account </nuxt-link>
 			</div>
 		</div>
 	</div>
 </template>
+
+<script lang="ts">
+import Vue from 'vue'
+export default Vue.extend({
+	computed: {
+		connected(): boolean {
+			return this.$store.state.connection.connected
+		},
+	},
+})
+</script>
