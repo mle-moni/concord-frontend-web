@@ -1,5 +1,8 @@
 export default {
 	// Global page headers: https://go.nuxtjs.dev/config-head
+	server: {
+		port: 7891,
+	},
 	head: {
 		title: 'concord-frontend-web',
 		meta: [
@@ -44,7 +47,7 @@ export default {
 	},
 
 	axios: {
-		baseURL: 'http://localhost:3333', // Used as fallback if no runtime config is provided
+		baseURL: 'http://localhost:7890', // Used as fallback if no runtime config is provided
 	},
 
 	// Build Configuration: https://go.nuxtjs.dev/config-build

@@ -36,15 +36,24 @@ export default Vue.extend({
 	},
 	methods: {
 		async login(): Promise<void> {
-			const ok: boolean = await this.$store.dispatch('connection/login', {
+			const status: number = await this.$store.dispatch('connection/login', {
 				email: this.email,
 				password: this.password,
 			})
-			if (!ok) {
-				this.errMsg = 'Invalid credentials'
-				return
+			switch (status) {
+				case 200:
+					this.$router.push('/')
+					return
+				case 500:
+					this.errMsg = 'error: API seems to be down, please contact website admin'
+					return
+				case 400:
+					this.errMsg = 'Invalid credentials'
+					return
+				default:
+					this.errMsg = `Unknown error, please contact site admin, give him this: [err ${status} on login]`
+					return
 			}
-			this.$router.push('/')
 		},
 	},
 })

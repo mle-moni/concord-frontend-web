@@ -61,9 +61,9 @@ export const actions: ActionTree<ConnectionState, RootState> = {
 			commit('setToken', res.token.token)
 			commit('setUser', res.user)
 			commit('setConnected', true)
-			return true
+			return 200
 		} catch (error) {
-			return false
+			return error.response.status
 		}
 	},
 	async logout({ commit }, token: string) {

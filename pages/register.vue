@@ -87,6 +87,10 @@ export default Vue.extend({
 				if (!error.response) {
 					return
 				}
+				if (error.response.status === 500) {
+					this.errMsg = `error: API seems to be down, please contact website admin`
+					return
+				}
 				const res = error.response.data
 				const err = <ValidationError>res.errors[0]
 				this.errMsg = `error: ${displayError(err)}`
