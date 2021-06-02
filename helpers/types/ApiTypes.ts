@@ -1,7 +1,7 @@
 export interface ValidationError {
 	field: string
 	message: string
-	rule: 'required' | 'email' | 'unique' | 'confirmed' | 'maxLength'
+	rule: 'required' | 'email' | 'unique' | 'confirmed' | 'maxLength' | 'minLength'
 }
 
 export interface Token {

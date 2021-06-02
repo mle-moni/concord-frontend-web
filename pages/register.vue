@@ -3,7 +3,6 @@
 		<div class="w-4/5 m-auto">
 			<form
 				class="flex flex-col"
-				autocomplete="off"
 				@submit.prevent="createAccount"
 			>
 				<input
@@ -43,23 +42,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { ValidationError, LoginSuccessResponse } from '~/helpers/types/ApiTypes'
-
-function displayError(err: ValidationError): string {
-	switch (err.rule) {
-		case 'required':
-			return `the field ${err.field} is required`
-		case 'email':
-			return `the field ${err.field} must be a valid email address`
-		case 'unique':
-			return `this ${err.field} is already used`
-		case 'confirmed':
-			return `passwords do not match`
-		case 'maxLength':
-			return `the field ${err.field} must be less than 30 characters`
-		default:
-			return `the field ${err.field} has an error ${err.rule}`
-	}
-}
+import { displayValidationError } from '~/helpers/errors'
 
 export default Vue.extend({
 	name: 'Register',
@@ -96,7 +79,7 @@ export default Vue.extend({
 				}
 				const res = error.response.data
 				const err = <ValidationError>res.errors[0]
-				this.errMsg = `error: ${displayError(err)}`
+				this.errMsg = `error: ${displayValidationError(err)}`
 				return
 			}
 		},
