@@ -53,7 +53,8 @@ export const actions: ActionTree<ConnectionState, RootState> = {
 		}
 		try {
 			this.$axios.setToken(token, 'Bearer')
-			const user: UserPrivateData = await this.$axios.$get('/me')
+			const res = await this.$axios.$get('/me')
+			const user: UserPrivateData = res.user
 			commit('setToken', token)
 			commit('setUser', user)
 			commit('setConnected', true)

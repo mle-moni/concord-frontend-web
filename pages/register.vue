@@ -81,7 +81,10 @@ export default Vue.extend({
 					password: this.password,
 					password_confirmation: this.passwordConfirmation,
 				})
-				this.$router.push('/login')
+				this.$store.commit('connection/setToken', res.token.token)
+				this.$store.commit('connection/setUser', res.user)
+				this.$store.commit('connection/setConnected', true)
+				this.$router.push('/')
 				return
 			} catch (error) {
 				if (!error.response) {
