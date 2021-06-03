@@ -19,16 +19,16 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 import { UserPrivateData } from '~/helpers/types/ApiTypes'
-export default Vue.extend({
-	computed: {
-		connected(): boolean {
-			return this.$store.state.connection.connected
-		},
-		user(): UserPrivateData {
-			return this.$store.state.connection.user
-		},
-	},
-})
+
+@Component
+export default class FormBasicInput extends Vue {
+	get connected(): boolean {
+		return this.$store.state.connection.connected
+	}
+	get user(): UserPrivateData {
+		return this.$store.state.connection.user
+	}
+}
 </script>

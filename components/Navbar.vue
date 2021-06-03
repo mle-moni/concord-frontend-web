@@ -12,26 +12,33 @@
 	</nav>
 </template>
 
-
 <script lang="ts">
-import Vue from 'vue'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 import { UserPrivateData } from '~/helpers/types/ApiTypes'
-export default Vue.extend({
-	computed: {
-		connected(): boolean {
-			return this.$store.state.connection.connected
-		},
-		token(): string {
-			return this.$store.state.connection.token
-		},
-		user(): UserPrivateData {
-			return this.$store.state.connection.user
-		},
-	},
-	methods: {
-		async logout() {
-			await this.$store.dispatch('connection/logout', this.token)
-		},
-	},
-})
+
+@Component
+export default class Navbar extends Vue {
+	fetchOnServer() {
+		return false
+	}
+	async fetch() {
+		localStorage.setItem('apiUrl', this.$axios.defaults.baseURL!)
+		await this.$store.dispatch('connection/init')
+	}
+
+	get connected(): boolean {
+		return this.$store.state.connection.connected
+	}
+	get token(): string {
+		return this.$store.state.connection.token
+	}
+	get user(): UserPrivateData {
+		return this.$store.state.connection.user
+	}
+
+	async logout() {
+		await this.$store.dispatch('connection/logout', this.token)
+		this.$router.push('/')
+	}
+}
 </script>
