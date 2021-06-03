@@ -5,43 +5,37 @@
 	<div v-else class="flex justify-center h-4/6">
 		<div class="w-4/5 m-auto">
 			<FormBasic
-				:submitEvent="editProfile"
+				:submitEvent="changePassword"
 			>
-				<FormBasicInput :model.sync="userbis.username" name="username" placeholder="username" />
+				<FormBasicInput :model.sync="password" name="password" placeholder="password" type="password" />
+				<FormBasicInput :model.sync="passwordConfirmation" name="password_confirmation"
+					placeholder="password confirmation" type="password"
+				/>
 				<FormBasicSubmit>Update account infos</FormBasicSubmit>
 				<HelperError>{{errMsg}}</HelperError>
 			</FormBasic>
 			<HelperSuccess>{{successMsg}}</HelperSuccess>
-			<br>
-			<div class="flex">
-				<nuxt-link to="/profile/change-password" class="m-auto"> Change your password </nuxt-link>
-			</div>
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
-import { UserPrivateData, ValidationError } from '~/helpers/types/ApiTypes'
+import { ValidationError } from '~/helpers/types/ApiTypes'
 import { displayValidationError } from '~/helpers/errors'
 
 @Component
 export default class ProfileIndex extends Vue {
 	public errMsg: string = ''
 	public successMsg: string = ''
-	public username: string = ''
+	public password: string = ''
+	public passwordConfirmation: string = ''
 
 	get connected(): boolean {
 		return this.$store.state.connection.connected
 	}
 	get token(): string {
 		return this.$store.state.connection.token
-	}
-	get user(): UserPrivateData {
-		return this.$store.state.connection.user
-	}
-	get userbis(): UserPrivateData {
-		return { ...this.user }
 	}
 
 	setMsg(msg: string, success = false): void {
@@ -53,13 +47,13 @@ export default class ProfileIndex extends Vue {
 		this.errMsg = msg
 		this.successMsg = ''
 	}
-	async editProfile(): Promise<void> {
+	async changePassword(): Promise<void> {
 		try {
 			this.$axios.setToken(this.token, 'Bearer')
-			const res = await this.$axios.$put(`/users/${this.user.id}`, {
-				username: this.userbis.username,
+			await this.$axios.$post(`/profile/change-password`, {
+				password: this.password,
+				password_confirmation: this.passwordConfirmation,
 			})
-			this.$store.commit('connection/setUser', res.user)
 			this.setMsg('Profile updated!', true)
 			return
 		} catch (error) {
@@ -77,9 +71,6 @@ export default class ProfileIndex extends Vue {
 				return
 			case 401:
 				this.setMsg('You need to be connected in order to update your profile')
-				return
-			case 404:
-				this.setMsg('Cannot find your profile, weird')
 				return
 			case 422:
 				const res = error.response.data
