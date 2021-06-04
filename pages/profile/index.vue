@@ -1,27 +1,26 @@
 <template>
-	<div v-if="!connected">
-		Loading...
-	</div>
-	<div v-else class="flex justify-center h-4/6">
-		<div class="w-4/5 m-auto">
-			<FormBasic
-				:submitEvent="editProfile"
-			>
-				<FormBasicInput :model.sync="userbis.username" name="username" placeholder="username" />
-				<FormBasicSubmit>Update account infos</FormBasicSubmit>
-				<HelperError>{{errMsg}}</HelperError>
-			</FormBasic>
-			<HelperSuccess>{{successMsg}}</HelperSuccess>
-			<br>
-			<div class="flex">
-				<LinkBasic to="/profile/change-password" class="m-auto"> Change your password </LinkBasic>
+	<HelperNeedAuth>
+		<div class="flex justify-center h-4/6">
+			<div class="w-4/5 m-auto">
+				<FormBasic
+					:submitEvent="editProfile"
+				>
+					<FormBasicInput :model.sync="userbis.username" name="username" placeholder="username" />
+					<FormBasicSubmit>Update account infos</FormBasicSubmit>
+					<HelperError>{{errMsg}}</HelperError>
+				</FormBasic>
+				<HelperSuccess>{{successMsg}}</HelperSuccess>
+				<br>
+				<div class="flex">
+					<LinkBasic to="/profile/change-password" class="m-auto"> Change your password </LinkBasic>
+				</div>
 			</div>
 		</div>
-	</div>
+	</HelperNeedAuth>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue } from 'nuxt-property-decorator'
 import { UserPrivateData, ValidationError } from '~/helpers/types/ApiTypes'
 import { displayValidationError } from '~/helpers/errors'
 
@@ -31,9 +30,6 @@ export default class ProfileIndex extends Vue {
 	public successMsg: string = ''
 	public username: string = ''
 
-	get connected(): boolean {
-		return this.$store.state.connection.connected
-	}
 	get token(): string {
 		return this.$store.state.connection.token
 	}

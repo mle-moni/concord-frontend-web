@@ -8,7 +8,7 @@
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
-export default class LinkBasic extends Vue {
+export default class LinkFake extends Vue {
 	@Prop({ default: '' })
 	to!: string
 
