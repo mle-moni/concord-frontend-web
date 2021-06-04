@@ -9,7 +9,7 @@
 					<li>free software</li>
 				</ul>
 				<br />
-				<nuxt-link to="/register"> Create an account </nuxt-link>
+				<LinkBasic to="/register"> Create an account </LinkBasic>
 			</div>
 			<div v-else class="m-auto">
 				Hello {{user.username}}

@@ -14,7 +14,7 @@
 			<HelperSuccess>{{successMsg}}</HelperSuccess>
 			<br>
 			<div class="flex">
-				<nuxt-link to="/profile/change-password" class="m-auto"> Change your password </nuxt-link>
+				<LinkBasic to="/profile/change-password" class="m-auto"> Change your password </LinkBasic>
 			</div>
 		</div>
 	</div>

@@ -1,8 +1,10 @@
 import { io, Socket } from 'socket.io-client'
 import { setupEvents } from './events'
+import { Store } from 'vuex'
 
 let socket: Socket | undefined
 let authenticated = false
+let store: Store<any> | undefined
 
 function initSocket() {
 	const url = localStorage.getItem('apiUrl')
@@ -29,4 +31,12 @@ function setAuthenticated(val: boolean) {
 	}
 }
 
-export { initSocket, getSocket, getAuthenticated, setAuthenticated }
+function getStore() {
+	return store
+}
+
+function setStore(val: Store<any>) {
+	store = val
+}
+
+export { initSocket, getSocket, getAuthenticated, setAuthenticated, getStore, setStore }

@@ -1,5 +1,6 @@
 import { Socket } from "socket.io-client"
-import { setAuthenticated } from "./init"
+import { setAuthenticated, getStore } from "./init"
+
 
 function getToken(): string {
 	return localStorage.getItem('token') || ''
@@ -19,6 +20,8 @@ function setupEvents(socket: Socket) {
 				break
 		}
 	})
+	// example of getStore usage
+	// getStore()!.state.connection.user
 }
 
 export { setupEvents }
