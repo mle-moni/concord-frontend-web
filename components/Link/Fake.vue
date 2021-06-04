@@ -1,7 +1,7 @@
 <template>
-	<nuxt-link :to="to" class="">
+	<a :href="to" @click.prevent="onclick" class="">
 		<slot></slot>
-	</nuxt-link>
+	</a>
 </template>
 
 <script lang="ts">
@@ -11,5 +11,10 @@ import { Component, Vue, Prop } from 'nuxt-property-decorator'
 export default class LinkBasic extends Vue {
 	@Prop({ default: '' })
 	to!: string
+
+	@Prop({
+		default: () => {},
+	})
+	onclick!: () => void
 }
 </script>

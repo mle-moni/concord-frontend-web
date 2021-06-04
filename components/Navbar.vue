@@ -2,12 +2,12 @@
 	<nav class="w-full flex justify-between p-4">
 		<LinkMain to="/"> Concord </LinkMain>
 		<div v-if="connected" class="flex">
-			<LinkBasic to="/profile">Profile</LinkBasic>
-			<a href="/logout" @click.prevent="logout">Logout</a>
+			<LinkBasic to="/profile" class="mx-2">Profile</LinkBasic>
+			<LinkFake to="/logout" :onclick="logout" class="mx-2">Logout</LinkFake>
 		</div>
 		<div v-else class="flex">
-			<LinkBasic to="/login">Login</LinkBasic>
-			<LinkBasic to="/register">Register</LinkBasic>
+			<LinkBasic to="/login" class="mx-2">Login</LinkBasic>
+			<LinkBasic to="/register" class="mx-2">Register</LinkBasic>
 		</div>
 	</nav>
 </template>
