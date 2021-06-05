@@ -1,7 +1,7 @@
 <template>
 	<HelperLoading v-if="isLoading"/>
 	<HelperNeedAuthMsg v-else-if="!connected"/>
-	<div v-else class="w-full h-full">
+	<div v-else class="w-full h-4/5">
 		<slot></slot>
 	</div>
 </template>

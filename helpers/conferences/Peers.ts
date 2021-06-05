@@ -18,10 +18,13 @@ export default class Peers {
 	}
 	private selfVideo: HTMLVideoElement
 	private peersVideosContainer: HTMLElement
-	constructor(socket: Socket, selfVideo: HTMLVideoElement, peersVideosContainer: HTMLElement) {
+	private peersVideosIdsContainer: HTMLElement
+	public visiblePeer = ''
+	constructor(socket: Socket, selfVideo: HTMLVideoElement, peersVideosContainer: HTMLElement, peersVideosIdsContainer: HTMLElement) {
 		this.socket = socket
 		this.selfVideo = selfVideo
 		this.peersVideosContainer = peersVideosContainer
+		this.peersVideosIdsContainer = peersVideosIdsContainer
 		this.peers = new Map<string, any>()
 	}
 	unsetEvents() {
@@ -36,6 +39,10 @@ export default class Peers {
 			const peerVideo = document.getElementById(`peer_video_${peerId}`)
 			if (peerVideo) {
 				peerVideo.parentNode!.removeChild(peerVideo)
+			}
+			const peerButton = document.getElementById(`peer_id_${peerId}`)
+			if (peerButton) {
+				peerButton.parentNode!.removeChild(peerButton)
 			}
 			pc.close()
 			this.peers.delete(peerId)
@@ -71,7 +78,7 @@ export default class Peers {
 		return this.peers
 	}
 	createPeerConnection(peerId: string) {
-		const peerVideo = this.createVideoElement(peerId)
+		const peerVideo = this.createVideoElement(peerId, this.peers.size)
 		const pc = new RTCPeerConnection(this.config)
 		this.peers.set(peerId, pc)
 		this.setupIceEvent(pc, peerId)
@@ -108,13 +115,38 @@ export default class Peers {
 			peerVideo.srcObject = event.streams[0]
 		}
 	}
-	createVideoElement(peerId: string) {
+	createVideoElement(peerId: string, peersCount: number) {
 		const video = document.createElement('video')
+		if (peersCount !== 0) {
+			video.style.display = 'none'
+		} else {
+			this.visiblePeer = peerId
+		}
+		video.style.width = '90vw'
+		video.style.maxHeight = '70vh'
 		video.setAttribute('playsinline', '')
 		video.setAttribute('autoplay', '')
 		video.id = `peer_video_${peerId}`
 		this.peersVideosContainer.appendChild(video)
+		const button = document.createElement('button')
+		button.innerText = peerId
+		button.id = `peer_id_${peerId}`
+		button.style.padding = '6px'
+		button.onclick = () => {
+			this.changePeerVisibility(this, peerId)
+		}
+		this.peersVideosIdsContainer.appendChild(button)
 		return video
+	}
+	changePeerVisibility(self: Peers, peerId: string) {
+		const peerVideoToHide = document.getElementById(`peer_video_${self.visiblePeer}`)
+		if (peerVideoToHide) {
+			peerVideoToHide.style.display = 'none'
+		}
+		const peerVideo = document.getElementById(`peer_video_${peerId}`)
+		if (peerVideo) {
+			peerVideo.style.display = 'block'
+		}
 	}
 }
 

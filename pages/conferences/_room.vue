@@ -1,20 +1,34 @@
 <template>
 	<HelperNeedAuth>
-		You are in {{roomName}}
+		<!-- You are in {{roomName}} -->
 		<!-- my video -->
-		<video id="main-video" playsinline autoplay muted></video>
-		<button @click="joinTheRoom">Join room</button>
-		<section class="select">
-			<label for="audio-source">Audio device : </label>
-			<select id="audio-source"></select>
-		</section>
+		<div v-if="!roomJoined" class="flex justify-center">
+			<button class="" @click="joinTheRoom">Join room</button>
+		</div>
+		<video id="main-video" class="w-1/6 fixed" playsinline autoplay muted></video>
+		<div id="peers-videos" class="w-full flex justify-center">
+			<!-- peers' videos will be created inside this div -->
+		</div>
+		<div id="peers-videos-ids"></div>
 
-		<section class="select">
-			<label for="video-source">Video device : </label>
-			<select id="video-source"></select>
-		</section>
-		<!-- peers' videos will be created inside this div -->
-		<div id="peers-videos"></div>
+		<div class="fixed left-0 bottom-0 w-full flex flex-col justify-center">
+			<button @click="showOptions">
+				Show options
+			</button>
+			<div :class="{'hidden': !showOpts}">
+				<div class="p-10">
+					<section class="select">
+						<label for="audio-source">Audio device : </label>
+						<select id="audio-source"></select>
+					</section>
+
+					<section>
+						<label for="video-source">Video device : </label>
+						<select id="video-source"></select>
+					</section>
+				</div>
+			</div>
+		</div>
 	</HelperNeedAuth>
 </template>
 
@@ -33,10 +47,16 @@ import {
 
 @Component
 export default class ConferenceRoom extends Vue {
+	public roomJoined: boolean = false
+	public showOpts: boolean = false
 	public roomName: string = this.$route.params.room
 	public peers: Peers | undefined
 	public myVideo: MyVideoParameter | undefined
 	public socket: Socket | undefined
+
+	showOptions() {
+		this.showOpts = !this.showOpts
+	}
 
 	setupEvents(socket: Socket) {
 		this.socket = socket
@@ -48,13 +68,14 @@ export default class ConferenceRoom extends Vue {
 		}
 		setMyVideoParam(this.myVideo)
 		const peersContainer = document.getElementById('peers-videos')!
+		const peersContainerIds = document.getElementById('peers-videos-ids')!
 		this.myVideo.audioSource.onchange = getStream
 		this.myVideo.videoSource.onchange = getStream
 
 		// user start to see his video stream
 		initStreamSource()
 
-		this.peers = new Peers(socket, this.myVideo.elem, peersContainer)
+		this.peers = new Peers(socket, this.myVideo.elem, peersContainer, peersContainerIds)
 		this.peers.setupEvents() // init socket events
 		this.socket.on('conferences/getRoomUsers', this.getRoomUsers)
 	}
@@ -91,6 +112,7 @@ export default class ConferenceRoom extends Vue {
 
 	joinTheRoom() {
 		if (!this.socket) throw new Error('socket is not defined')
+		this.roomJoined = true
 		joinRoom(this.socket, this.roomName)
 	}
 	// socket event
