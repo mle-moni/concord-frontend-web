@@ -9,7 +9,7 @@
 		<div id="peers-videos" class="w-full flex justify-center">
 			<!-- peers' videos will be created inside this div -->
 		</div>
-		<div id="peers-videos-ids"></div>
+		<div id="peers-videos-ids" class="w-full flex justify-center"></div>
 
 		<div class="fixed left-0 bottom-0 w-full flex flex-col justify-center">
 			<button @click="showOptions">
@@ -44,6 +44,7 @@ import {
 	joinRoom,
 	initStreamSource,
 } from '~/helpers/conferences/streams'
+import { UserPublicData } from '~/helpers/types/ApiTypes'
 
 @Component
 export default class ConferenceRoom extends Vue {
@@ -78,6 +79,7 @@ export default class ConferenceRoom extends Vue {
 		this.peers = new Peers(socket, this.myVideo.elem, peersContainer, peersContainerIds)
 		this.peers.setupEvents() // init socket events
 		this.socket.on('conferences/getRoomUsers', this.getRoomUsers)
+		this.socket.on('conferences/setUserData', this.setUserData)
 	}
 
 	unsetEvents(socket: Socket) {
@@ -116,10 +118,13 @@ export default class ConferenceRoom extends Vue {
 		joinRoom(this.socket, this.roomName)
 	}
 	// socket event
-	getRoomUsers(usersArray: string[]) {
-		for (let peerId of usersArray) {
-			this.peers!.addPeer(peerId)
+	getRoomUsers(usersArray: { socketId: string; user: UserPublicData }[]) {
+		for (let peer of usersArray) {
+			this.peers!.addPeer(peer)
 		}
+	}
+	setUserData(data: { socketId: string; user: UserPublicData }) {
+		this.peers!.addPeerData(data.socketId, data.user)
 	}
 }
 </script>

@@ -1,9 +1,10 @@
 import { Socket } from "socket.io-client"
+import { UserPublicData } from "../types/ApiTypes"
 
 export default class Peers {
 	private socket: Socket
-	private peers: Map<string, RTCPeerConnection>
-	private constraints = { audio: true, video: true }
+	private peers = new Map<string, RTCPeerConnection>()
+	private peersData = new Map<string, UserPublicData>()
 	private config = {
 		iceServers: [
 			{
@@ -25,7 +26,6 @@ export default class Peers {
 		this.selfVideo = selfVideo
 		this.peersVideosContainer = peersVideosContainer
 		this.peersVideosIdsContainer = peersVideosIdsContainer
-		this.peers = new Map<string, any>()
 	}
 	unsetEvents() {
 		const socket = <any>this.socket
@@ -94,14 +94,26 @@ export default class Peers {
 		stream.getTracks().forEach((track: any) => pc.addTrack(track, stream))
 	}
 	// setup peer and start signaling process
-	addPeer(peerId: string) {
+	addPeer(peer: { socketId: string; user: UserPublicData }) {
+		const peerId = peer.socketId
 		const pc = this.createPeerConnection(peerId)
-
+		this.peersData.set(peerId, peer.user)
+		const button = document.getElementById(`peer_id_${peerId}`)
+		if (button) {
+			button.textContent = peer.user.username
+		}
 		pc.createOffer()
 			.then(sdp => pc.setLocalDescription(sdp))
 			.then(() => {
 				this.socket.emit('conferences/signaling', peerId, 'offer', pc.localDescription)
 			})
+	}
+	addPeerData(peerId: string, user: UserPublicData) {
+		this.peersData.set(peerId, user)
+		const button = document.getElementById(`peer_id_${peerId}`)
+		if (button) {
+			button.textContent = user.username
+		}
 	}
 	setupIceEvent(pc: RTCPeerConnection, peerId: string) {
 		pc.onicecandidate = event => {
@@ -129,7 +141,7 @@ export default class Peers {
 		video.id = `peer_video_${peerId}`
 		this.peersVideosContainer.appendChild(video)
 		const button = document.createElement('button')
-		button.innerText = peerId
+		button.textContent = this.peersData.get(peerId)?.username || peerId
 		button.id = `peer_id_${peerId}`
 		button.style.padding = '6px'
 		button.onclick = () => {
