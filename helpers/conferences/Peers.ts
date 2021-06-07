@@ -158,7 +158,7 @@ export default class Peers {
 		const peerVideo = document.getElementById(`peer_video_${peerId}`)
 		if (peerVideo) {
 			peerVideo.style.display = 'block'
+			self.visiblePeer = peerId
 		}
 	}
 }
-
