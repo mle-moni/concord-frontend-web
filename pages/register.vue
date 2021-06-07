@@ -1,5 +1,7 @@
 <template>
-	<div class="flex justify-center h-4/6">
+	<HelperLoading v-if="isLoading" />
+	<HelperAlreadyConnected v-else-if="connected" />
+	<div v-else class="flex justify-center h-4/6">
 		<div class="w-4/5 m-auto">
 			<FormBasic
 				:submitEvent="createAccount"
@@ -18,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue } from 'nuxt-property-decorator'
 import { ValidationError, LoginSuccessResponse } from '~/helpers/types/ApiTypes'
 import { displayValidationError } from '~/helpers/errors'
 
@@ -41,7 +43,9 @@ export default class Register extends Vue {
 			this.$store.commit('connection/setToken', res.token.token)
 			this.$store.commit('connection/setUser', res.user)
 			this.$store.commit('connection/setConnected', true)
-			this.$router.push('/')
+			const url: string = this.$store.state.connection.afterLoginUrl
+			this.$store.commit('connection/setUrl', '/')
+			this.$router.push(url)
 			return
 		} catch (error) {
 			if (!error.response) {
@@ -56,6 +60,12 @@ export default class Register extends Vue {
 			this.errMsg = `error: ${displayValidationError(err)}`
 			return
 		}
+	}
+	get isLoading(): boolean {
+		return this.$store.state.connection.loading
+	}
+	get connected(): boolean {
+		return this.$store.state.connection.connected
 	}
 }
 </script>

@@ -23,8 +23,16 @@ function getAuthenticated() {
 	return authenticated
 }
 
+const callbacks = {
+	login: (socket: Socket) => { },
+	logout: (socket: Socket) => { },
+}
+
 function setAuthenticated(val: boolean) {
 	authenticated = val
+	if (authenticated && socket) {
+		callbacks.login(socket)
+	}
 	if (!val && socket) {
 		socket.disconnect()
 		socket = undefined
@@ -39,4 +47,12 @@ function setStore(val: Store<any>) {
 	store = val
 }
 
-export { initSocket, getSocket, getAuthenticated, setAuthenticated, getStore, setStore }
+function setCallback(name: 'login' | 'logout', callback: (socket: Socket) => void) {
+	callbacks[name] = callback
+	if (name === 'login' && authenticated && socket) {
+		// if socket is already authenticated, fire the callback
+		callback(socket)
+	}
+}
+
+export { initSocket, getSocket, getAuthenticated, setAuthenticated, getStore, setStore, setCallback }

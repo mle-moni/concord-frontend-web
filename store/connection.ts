@@ -11,6 +11,8 @@ interface ConnectionInfos {
 
 export const state = () => ({
 	connected: false,
+	loading: true, // can be used to know if you have to display 'loading' or 'not connected!'
+	afterLoginUrl: '/',
 	user: { id: 0, username: '', email: '' } as UserPrivateData,
 	token: '',
 })
@@ -35,14 +37,18 @@ export const mutations: MutationTree<ConnectionState> = {
 		state.user.username = user.username
 	},
 	setConnected: (state, connected: boolean) => {
+		state.loading = false
 		state.connected = connected
 		if (!connected) {
 			setAuthenticated(false)
 			return
 		}
 		if (!getSocket()) {
-			initSocket()
+			initSocket() // init socket only if user is connected
 		}
+	},
+	setUrl: (state, url: string) => {
+		state.afterLoginUrl = url
 	},
 }
 
@@ -60,6 +66,7 @@ export const actions: ActionTree<ConnectionState, RootState> = {
 			commit('setConnected', true)
 			return true
 		} catch (error) {
+			commit('setConnected', false)
 			return false
 		}
 	},
